@@ -1,0 +1,9 @@
+@import "tailwindcss";
+body {
+    font-family: 'Arsenal SC', sans-serif;
+  }
+  
+  /* Optionally target specific elements */
+  h1, h2, h3 ,p{
+    font-family: 'Arsenal SC', sans-serif;
+  }
