@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 
-const MentorCard = ({ selected, triggerShuffle }) => {
+const MentorCard = ({ selectedMentor, triggerShuffle }) => {
   const [displayName, setDisplayName] = useState(null);
   const [isShuffling, setIsShuffling] = useState(false);
+  console.log(selectedMentor)
 
   useEffect(() => {
     if (triggerShuffle) {
@@ -30,10 +31,8 @@ const MentorCard = ({ selected, triggerShuffle }) => {
       <p className="text-center text-lg mt-4 text-gray-800">
         {isShuffling
           ? displayName
-          : selected
-          ? selected.name
-          : "Find Match"}
-      </p>
+          : selectedMentor
+      }</p>
     </div>
   );
 };

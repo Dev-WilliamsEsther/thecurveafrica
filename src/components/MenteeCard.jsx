@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const MenteeCard = ({ selected, triggerShuffle }) => {
+const MenteeCard = ({ selectedMentee, triggerShuffle }) => {
   const [displayName, setDisplayName] = useState(null);
   const [isShuffling, setIsShuffling] = useState(false);
 
@@ -30,9 +30,8 @@ const MenteeCard = ({ selected, triggerShuffle }) => {
       <p className="text-center text-lg mt-4 text-gray-800">
         {isShuffling
           ? displayName
-          : selected
-          ? selected.name
-          : "Find Match"}
+          : selectedMentee
+          }
       </p>
     </div>
   );

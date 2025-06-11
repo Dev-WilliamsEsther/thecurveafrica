@@ -15,7 +15,6 @@ const initialMentees = [
   { name: "Ben", stack: "Product Design" },
   { name: "Adio", stack: "Backend" },
   { name: "Maggie", stack: "Frontend" },
-
 ];
 
 const initialMentors = [
@@ -27,15 +26,14 @@ const initialMentors = [
   { name: "Mr. Cynthia", stack: "Frontend" },
   { name: "Mr. Ahmed", stack: "Backend" },
   { name: "Mr. Tuni", stack: "DevOps" },
-
 ];
 
 const App = () => {
   const [mentees, setMentees] = useState(initialMentees);
   const [mentors, setMentors] = useState(initialMentors);
 
-  const [selectedMentee, setSelectedMentee] = useState(null);
-  const [selectedMentor, setSelectedMentor] = useState(null);
+  const [selectedMentee, setSelectedMentee] = useState("Find a mentee");
+  const [selectedMentor, setSelectedMentor] = useState("Find a mentor");
 
   const [pairings, setPairings] = useState([]);
 
@@ -44,12 +42,10 @@ const App = () => {
   const [triggerMenteeShuffle, setTriggerMenteeShuffle] = useState(false);
   const [triggerMentorShuffle, setTriggerMentorShuffle] = useState(false);
 
-  const [history,setHistory] = useState([]);
+  const [history, setHistory] = useState([]);
 
   const [showConfetti, setShowConfetti] = useState(false);
   const [width, height] = useWindowSize();
-
-
 
   const getRandomFromList = (list) => {
     const index = Math.floor(Math.random() * list.length);
@@ -57,128 +53,126 @@ const App = () => {
   };
 
   const handlePair = async (stack) => {
-    console.log("Pair made")
+    console.log("Pair made");
+    const apiUrl = "https://mentorship-system.onrender.com/api/run?";
 
     try {
       const api = await axios.get(`${apiUrl}stack=${stack}`);
-      console.log(api)
+      console.log(api);
+      setSelectedMentee(api?.data?.data?.mentee);
+      setSelectedMentor(api?.data?.data?.mentor);
+      if (api?.data?.success === false) {
+        alert(api?.data?.message);
+        setSelectedMentor("Find a mentor");
+        setSelectedMentee("Find a mentee");
+        return;
+      }
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
 
-    if (mentees.length === 0 || mentors.length === 0) return;
-  
     const mentee = getRandomFromList(mentees);
     const mentor = getRandomFromList(mentors);
 
     setTriggerMenteeShuffle(true);
-  setTriggerMentorShuffle(true);
+    setTriggerMentorShuffle(true);
 
-  setTimeout(() => {
-    // Stop shuffle trigger
-    setTriggerMenteeShuffle(false);
-    setTriggerMentorShuffle(false);
-  
-    setSelectedMentee(mentee);
-    setSelectedMentor(mentor);
-  
-    // Remove paired names
-    setMentees(prev => prev.filter(m => m.name !== mentee.name));
-    setMentors(prev => prev.filter(m => m.name !== mentor.name));
+    setTimeout(() => {
+      // Stop shuffle trigger
+      setTriggerMenteeShuffle(false);
+      setTriggerMentorShuffle(false);
 
-  
-    // Save the pair
-    const newPair = {
-      mentee: mentee.name,
-      mentor: mentor.name,
-      stack: mentee.stack
-    };
-    setPairings(prev => [...prev, newPair]);
-  
-    // Show confetti
-    setShowConfetti(true);
-    setTimeout(() => setShowConfetti(false), 4000);
-  }, 1500);
-};
-  
+      // Remove paired names
+      // setMentees(prev => prev.filter(m => m.name !== mentee.name));
+      // setMentors(prev => prev.filter(m => m.name !== mentor.name));
 
+      // Save the pair
+      const newPair = {
+        mentee: mentee.name,
+        mentor: mentor.name,
+        stack: mentee.stack,
+      };
+      setPairings((prev) => [...prev, newPair]);
 
+      // Show confetti
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 4000);
+    }, 1500);
+  };
 
-  useEffect(() => {
-    if (selectedMentor && selectedMentee) {
-      setSelectedMentor(null);
-      setSelectedMentee(null);
-    }
-  }, [selectedMentor, selectedMentee]);
+  // useEffect(() => {
+  //   if (selectedMentor && selectedMentee) {
+  //     setSelectedMentor(null);
+  //     setSelectedMentee(null);
+  //   }
+  // }, [selectedMentor, selectedMentee]);
 
   const filteredPairings =
     selectedTab === "All"
       ? history
       : history.filter((pair) => pair.stack === selectedTab);
 
-      const apiUrl = "https://mentorship-system.onrender.com/api/run?";
-      const pairmentees = async (stack) => {
-        try {
-          const api = await axios.get(`${apiUrl}stack=${stack}`);
-          console.log(api)
-        } catch (err) {
-          console.log(err)
-        }
+  const apiPair = "https://mentorship-system.onrender.com/api/get-pairings?";
+
+  useEffect(() => {
+    const getpairing = async (stack) => {
+      try {
+        const api = await axios.get(`${apiPair}stack=${stack}`);
+        console.log(api.data.data);
+        setHistory(api.data.data);
+      } catch (err) {
+        console.log(err);
       }
-
-
-      const apiPair = "https://mentorship-system.onrender.com/api/get-pairings";
-
-      useEffect (() => {
-
-        const getpairing = async (stack) => {
-          try {
-            const api = await axios.get(`${apiPair}stack=${stack}`);
-            console.log(api.data.data)
-            setHistory(api.data.data)
-          } catch (err) {
-            console.log(err)
-          }
-        }
-        getpairing(selectedTab);
-      },[])
-
+    };
+    getpairing(selectedTab);
+  }, []);
 
   return (
     <>
-    <div className="min-h-screen bg-gray-100 p-8 font-sans">
-      {showConfetti && <Confetti width={width} height={height} />}
-      <h1 className="text-3xl font-bold text-center mb-6">
-        <img src="images/curve.png" alt="" className="w-20" /> Mentor-Mentee Pairing</h1>
+      <div className="min-h-screen bg-gray-100 p-8 font-sans">
+        {showConfetti && <Confetti width={width} height={height} />}
+        <h1 className="text-3xl font-bold text-center mb-6">
+          <img src="images/curve.png" alt="" className="w-20" /> Mentor-Mentee
+          Pairing
+        </h1>
 
         <div className="flex justify-center space-x-4 mb-6 capitalize">
-          {["Frontend", "Backend", "Product Design"].map((stack) => (  
-                  
-        <button
-          key={stack}
-          onClick={() => setSelectedTab(stack)}
-          className={`px-4 py-2 rounded-[4px] font-semibold transition border-black ${
-          selectedTab === stack
-          ? "bg-orange-400 text-white"
-          : "bg-gray-200 text-gray-700"
-          }`}
-        >
-        {stack}
-        </button>
+          {["Frontend", "Backend", "Product Design"].map((stack) => (
+            <button
+              key={stack}
+              onClick={() => setSelectedTab(stack)}
+              className={`px-4 py-2 rounded-[4px] font-semibold transition border-black ${
+                selectedTab === stack
+                  ? "bg-orange-400 text-white"
+                  : "bg-gray-200 text-gray-700"
+              }`}
+            >
+              {stack}
+            </button>
           ))}
         </div>
 
-      <div className="flex justify-center items-center gap-10 mb-6">
-        <MenteeCard selected={selectedMentee} triggerShuffle={triggerMenteeShuffle}/>
-        <div 
-        onClick={()=> handlePair(selectedTab)}
-        className="cursor-pointer px-10 h-16 bg-orange-400 rounded-[4px] hover:bg-orange-500 transition">
-          <h1 className="text-2xl font-bold text-center pt-4">Pair</h1></div>
-        <MentorCard selected={selectedMentor} triggerShuffle={triggerMentorShuffle}/>
+        <div className="flex justify-center items-center gap-10 mb-6">
+          <MenteeCard
+            selectedMentee={selectedMentee}
+            triggerShuffle={triggerMenteeShuffle}
+          />
+          <button
+            onClick={() => handlePair(selectedTab)}
+            disabled={selectedTab === ""}
+            style={{background: selectedTab === "" ? "#ccc" : "orange", cursor: selectedTab === "" ? "not-allowed" : "pointer", color: selectedTab === "" ? "#666" : "black"}}
+            className="cursor-pointer px-10 h-16 bg-orange-400 rounded-[4px] hover:bg-orange-500 transition"
+          >
+            <h1 className="text-2xl font-bold text-center">Pair</h1>
+          </button>
+          <MentorCard
+            selectedMentor={selectedMentor}
+            triggerShuffle={triggerMentorShuffle}
+          />
+        </div>
+
+        <PairingTable pairings={filteredPairings} />
       </div>
-    
-      <PairingTable pairings={filteredPairings} />
-    </div>
     </>
   );
 };
