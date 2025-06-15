@@ -52,6 +52,24 @@ const App = () => {
     return list[index];
   };
 
+  const apiPair = "https://mentorship-system.onrender.com/api/get-pairings?";
+
+  const getpairing = async (stack) => {
+    try {
+      const api = await axios.get(`${apiPair}stack=${stack}`);
+      console.log(api.data.data);
+      setHistory(api.data.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedTab) {
+      getpairing(selectedTab);
+    }
+  }, [selectedTab]);
+
   const handlePair = async (stack) => {
     console.log("Pair made");
     const apiUrl = "https://mentorship-system.onrender.com/api/run?";
@@ -61,6 +79,10 @@ const App = () => {
       console.log(api);
       setSelectedMentee(api?.data?.data?.mentee);
       setSelectedMentor(api?.data?.data?.mentor);
+       setTimeout(() => {
+        getpairing(stack);
+       }, 4000);
+
       if (api?.data?.success === false) {
         alert(api?.data?.message);
         setSelectedMentor("Find a mentor");
@@ -112,21 +134,6 @@ const App = () => {
       ? history
       : history.filter((pair) => pair.stack === selectedTab);
 
-  const apiPair = "https://mentorship-system.onrender.com/api/get-pairings?";
-
-  useEffect(() => {
-    const getpairing = async (stack) => {
-      try {
-        const api = await axios.get(`${apiPair}stack=${stack}`);
-        console.log(api.data.data);
-        setHistory(api.data.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    getpairing(selectedTab);
-  }, []);
-
   return (
     <>
       <div className="min-h-screen bg-gray-100 p-8 font-sans">
@@ -160,7 +167,11 @@ const App = () => {
           <button
             onClick={() => handlePair(selectedTab)}
             disabled={selectedTab === ""}
-            style={{background: selectedTab === "" ? "#ccc" : "orange", cursor: selectedTab === "" ? "not-allowed" : "pointer", color: selectedTab === "" ? "#666" : "black"}}
+            style={{
+              background: selectedTab === "" ? "#ccc" : "orange",
+              cursor: selectedTab === "" ? "not-allowed" : "pointer",
+              color: selectedTab === "" ? "#666" : "black",
+            }}
             className="cursor-pointer px-10 h-16 bg-orange-400 rounded-[4px] hover:bg-orange-500 transition"
           >
             <h1 className="text-2xl font-bold text-center">Pair</h1>
