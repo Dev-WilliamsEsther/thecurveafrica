@@ -11,7 +11,7 @@ const MentorCard = ({ selectedMentor, triggerShuffle }) => {
       let counter = 0;
 
       const interval = setInterval(() => {
-        const fakeNames = ["Jane", "Bella", "Titi", "Lola", "Ada"];
+        const fakeNames = ["Agbo Emmanuel", "Ogudu Sylveste", "	Jehoshaphat", "	Kingsley Adio", "Suliton Olalere"];
         const randomName = fakeNames[Math.floor(Math.random() * fakeNames.length)];
         setDisplayName(randomName);
         counter++;
@@ -20,7 +20,7 @@ const MentorCard = ({ selectedMentor, triggerShuffle }) => {
       setTimeout(() => {
         clearInterval(interval);
         setIsShuffling(false);
-      }, 1500); // 1.5 seconds
+      }, 2000); 
     }
   }, [triggerShuffle]);
 

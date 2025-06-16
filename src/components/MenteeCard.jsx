@@ -10,7 +10,7 @@ const MenteeCard = ({ selectedMentee, triggerShuffle }) => {
       let counter = 0;
 
       const interval = setInterval(() => {
-        const fakeNames = ["Jane", "Bella", "Titi", "Lola", "Ada"];
+        const fakeNames = ["Obineche Peter", "Peter Kelechukwu", "Kalejaiye Joy", "Lola", "Arinze Orizu"];
         const randomName = fakeNames[Math.floor(Math.random() * fakeNames.length)];
         setDisplayName(randomName);
         counter++;
@@ -19,7 +19,7 @@ const MenteeCard = ({ selectedMentee, triggerShuffle }) => {
       setTimeout(() => {
         clearInterval(interval);
         setIsShuffling(false);
-      }, 1500); // 1.5 seconds
+      }, 2000); 
     }
   }, [triggerShuffle]);
 
